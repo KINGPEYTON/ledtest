@@ -13,7 +13,8 @@ Adafruit_DotStar strip1(NUMPIXELS, DATAPIN, CLOCKPIN, DOTSTAR_BRG);
 
 // Here's how to control the LEDs from any two pins:
 #define DATAPIN2 10  // green
-#define CLOCKPIN2 11 // yellow
+#define CLOCKPIN2 11
+// yellow
 Adafruit_DotStar strip2(NUMPIXELS, DATAPIN2, CLOCKPIN2, DOTSTAR_BRG);
 // The last parameter is optional -- this is the color data order of the
 // DotStar strip, which has changed over time in different production runs.
@@ -62,6 +63,10 @@ void setup()
   startAdv();
 
   beginStrip(&strip1);
+  beginStrip(&strip2);
+
+  strip1.setBrightness(25);
+  strip2.setBrightness(25);
 }
 
 int head = 0, tail = -10;  // Index of first 'on' and 'off' pixels
@@ -74,7 +79,7 @@ bool editMode = 0;
 
 bool on1 = true;
 bool on2 = true;
-int mode1 = 12;
+int mode1 = 7;
 int mode2 = 0;
 
 int prevCom;
@@ -87,12 +92,15 @@ void loop()
     int command = bleuart.read();
     if (command > 1)
     {
-      if(editMode == 0){
+      if (editMode == 0)
+      {
         mode1 = changeLedMode(mode1, command, &on1);
-      } else if (editMode == 1){
+      }
+      else if (editMode == 1)
+      {
         mode2 = changeLedMode(mode2, command, &on2);
       }
-      Serial.print((char)command);
+      // Serial.print((char)command);
     }
   }
 
@@ -170,12 +178,12 @@ void setLEDMode(int mode, Adafruit_DotStar *strip)
   case 11:
   { // Get Version
     uint32_t tColors[] = {0x00ff00, 0x0000ff};
-    multiColorStrobe(strip, tColors, sizeof(tColors) / sizeof(tColors[0]) ,3, 10, 50, 250);
+    multiColorStrobe(strip, tColors, sizeof(tColors) / sizeof(tColors[0]), 3, 10, 50, 250);
     break;
   }
   case 12:
   { // Get Version
-    morseMessage(strip, "lol", 500, 0x00ff00);
+    morseMessage(strip, "lol", 1000, 0xff00f0);
     break;
   }
   }
@@ -183,8 +191,9 @@ void setLEDMode(int mode, Adafruit_DotStar *strip)
 
 int changeLedMode(int mode, int command, bool *isOn)
 {
-  // Serial.println((char) command);
-  if(prevCom == 'B'){
+  Serial.println((char)prevCom);
+  if (prevCom == 'B')
+  {
     if (isOn)
     {
       if (command == '7')
@@ -241,19 +250,20 @@ int changeLedMode(int mode, int command, bool *isOn)
         buttonUp = true;
       }
     }
-  } else if (command == '6')
-  {
-    if (buttonUp)
+    else if (command == '6')
     {
-      //editMode = !editMode;
-      buttonUp = false;
-    }
-    else
-    {
-      buttonUp = true;
+      if (buttonUp)
+      {
+        //editMode = !editMode;
+        buttonUp = false;
+      }
+      else
+      {
+        buttonUp = true;
+      }
     }
   }
-  
+
   prevCom = command;
   return mode;
 }
@@ -309,7 +319,7 @@ void meteorRainGradient(Adafruit_DotStar *strip, uint16_t startColor, byte meteo
 
     if (bleuart.read() == 'B')
     {
-      prevCom == 'B';
+      prevCom = 'B';
       break;
     }
 
@@ -347,7 +357,7 @@ void meteorRain(Adafruit_DotStar *strip, byte red, byte green, byte blue, byte m
 
     if (bleuart.read() == 'B')
     {
-      prevCom == 'B';
+      prevCom = 'B';
       break;
     }
 
@@ -402,7 +412,7 @@ void BouncingBalls(Adafruit_DotStar *strip, byte red, byte green, byte blue, int
   {
     if (bleuart.read() == 'B')
     {
-      prevCom == 'B';
+      prevCom = 'B';
       break;
     }
     for (int i = 0; i < BallCount; i++)
@@ -461,7 +471,7 @@ void BouncingColoredBalls(Adafruit_DotStar *strip, int BallCount, byte colors[][
   {
     if (bleuart.read() == 'B')
     {
-      prevCom == 'B';
+      prevCom = 'B';
       break;
     }
     for (int i = 0; i < BallCount; i++)
@@ -545,7 +555,7 @@ void theaterChaseRainbow(Adafruit_DotStar *strip, int SpeedDelay)
   { // cycle all 256 colors in the wheel
     if (bleuart.read() == 'B')
     {
-      prevCom == 'B';
+      prevCom = 'B';
       break;
     }
     for (int q = 0; q < 3; q++)
@@ -575,7 +585,7 @@ void gamerRGB(Adafruit_DotStar *strip, int SpeedDelay)
   { // cycle all 256 colors in the wheel
     if (bleuart.read() == 'B')
     {
-      prevCom == 'B';
+      prevCom = 'B';
       break;
     }
     for (int i = 0; i < NUMPIXELS; i++)
@@ -589,7 +599,7 @@ void gamerRGB(Adafruit_DotStar *strip, int SpeedDelay)
   }
 }
 
-void Strobe(Adafruit_DotStar *strip, byte red, byte green, byte blue, int StrobeCount, int FlashDelay,  int inbeweenDelay, int EndPause)
+void Strobe(Adafruit_DotStar *strip, byte red, byte green, byte blue, int StrobeCount, int FlashDelay, int inbeweenDelay, int EndPause)
 {
   for (int j = 0; j < StrobeCount; j++)
   {
@@ -602,7 +612,7 @@ void Strobe(Adafruit_DotStar *strip, byte red, byte green, byte blue, int Strobe
 
     if (bleuart.read() == 'B')
     {
-      prevCom == 'B';
+      prevCom = 'B';
       break;
     }
   }
@@ -610,7 +620,7 @@ void Strobe(Adafruit_DotStar *strip, byte red, byte green, byte blue, int Strobe
   delay(EndPause);
 }
 
-void Strobe(Adafruit_DotStar *strip, uint32_t col, int StrobeCount, int FlashDelay,  int inbeweenDelay, int EndPause)
+void Strobe(Adafruit_DotStar *strip, uint32_t col, int StrobeCount, int FlashDelay, int inbeweenDelay, int EndPause)
 {
   for (int j = 0; j < StrobeCount; j++)
   {
@@ -623,7 +633,7 @@ void Strobe(Adafruit_DotStar *strip, uint32_t col, int StrobeCount, int FlashDel
 
     if (bleuart.read() == 'B')
     {
-      prevCom == 'B';
+      prevCom = 'B';
       break;
     }
   }
@@ -638,12 +648,12 @@ void multiColorStrobe(Adafruit_DotStar *strip, uint32_t col[], int arrSize, int 
   {
     if (bleuart.read() == 'B')
     {
-      prevCom == 'B';
+      prevCom = 'B';
       break;
     }
     for (int j = 0; j < StrobeCount; j++)
     {
-      for (int h = i; h < sections; h+=arrSize)
+      for (int h = i; h < sections; h += arrSize)
       {
         setSect(strip, col[i], (NUMPIXELS / sections) * h, (NUMPIXELS / sections) * (h + 1));
       }
@@ -654,11 +664,11 @@ void multiColorStrobe(Adafruit_DotStar *strip, uint32_t col[], int arrSize, int 
       delay(FlashDelay);
       if (bleuart.read() == 'B')
       {
-      prevCom == 'B';
-      break;
+        prevCom = 'B';
+        break;
       }
     }
-  delay(EndPause);
+    delay(EndPause);
   }
 }
 // mode helper methods
@@ -735,21 +745,21 @@ byte *Wheel(byte WheelPos)
 void morseMessage(Adafruit_DotStar *strip, String message, int timeDelay, uint32_t col)
 {
   int num = message.length();
-  char* char_array = new char[num+ 1];
+  char *char_array = new char[num + 1];
   strcpy(char_array, message.c_str());
-  
+
   for (int i = 0; i < num; i++)
   {
     if (bleuart.read() == 'B')
     {
-      prevCom == 'B';
+      prevCom = 'B';
       break;
     }
 
     morseLetter(strip, char_array[i], col, timeDelay);
   }
 
-  delay(timeDelay*3);
+  delay(timeDelay * 3);
 }
 
 void morseLetter(Adafruit_DotStar *strip, char letter, uint32_t col, int letterDelay)
@@ -757,224 +767,224 @@ void morseLetter(Adafruit_DotStar *strip, char letter, uint32_t col, int letterD
   switch (letter)
   {
   case 'a':
-  {                                                    //  .-
-    Strobe(strip, col, 1, letterDelay/4, letterDelay/2, 0);  // 1 dot
-    Strobe(strip, col, 1, letterDelay/2, letterDelay/2, 0); // 1 dash
+  {                                                             //  .-
+    Strobe(strip, col, 1, letterDelay / 4, letterDelay / 2, 0); // 1 dot
+    Strobe(strip, col, 1, letterDelay / 2, letterDelay / 2, 0); // 1 dash
     break;
   }
   case 'b':
-  {                                                    ///  -...
-    Strobe(strip, col, 1, letterDelay/2, letterDelay/2, 0); // 1 dash
-    Strobe(strip, col, 3, letterDelay/4, letterDelay/2, 0);  // 3 dot
+  {                                                             ///  -...
+    Strobe(strip, col, 1, letterDelay / 2, letterDelay / 2, 0); // 1 dash
+    Strobe(strip, col, 3, letterDelay / 4, letterDelay / 2, 0); // 3 dot
     break;
   }
   case 'c':
-  {                                                    //  -.-.
-    Strobe(strip, col, 1, letterDelay/2, letterDelay/2, 0); // 1 dash
-    Strobe(strip, col, 1, letterDelay/4, letterDelay/2, 0);  // 1 dot
-    Strobe(strip, col, 1, letterDelay/2, letterDelay/2, 0); // 1 dash
-    Strobe(strip, col, 1, letterDelay/4, letterDelay/2, 0);  // 1 dot
+  {                                                             //  -.-.
+    Strobe(strip, col, 1, letterDelay / 2, letterDelay / 2, 0); // 1 dash
+    Strobe(strip, col, 1, letterDelay / 4, letterDelay / 2, 0); // 1 dot
+    Strobe(strip, col, 1, letterDelay / 2, letterDelay / 2, 0); // 1 dash
+    Strobe(strip, col, 1, letterDelay / 4, letterDelay / 2, 0); // 1 dot
     break;
   }
   case 'd':
-  {                                                    //  -..
-    Strobe(strip, col, 1, letterDelay/2, letterDelay/2, 0); // 1 dash
-    Strobe(strip, col, 2, letterDelay/4, letterDelay/2, 0);  // 2 dot
+  {                                                             //  -..
+    Strobe(strip, col, 1, letterDelay / 2, letterDelay / 2, 0); // 1 dash
+    Strobe(strip, col, 2, letterDelay / 4, letterDelay / 2, 0); // 2 dot
     break;
   }
   case 'e':
-  {                                                   //  .
-    Strobe(strip, col, 1, letterDelay/4, letterDelay/2, 0); // 1 dot
+  {                                                             //  .
+    Strobe(strip, col, 1, letterDelay / 4, letterDelay / 2, 0); // 1 dot
     break;
   }
   case 'f':
-  {                                                    //  ..-.
-    Strobe(strip, col, 2, letterDelay/4, letterDelay/2, 0);  // 2 dot
-    Strobe(strip, col, 1, letterDelay/2, letterDelay/2, 0); // 1 dash
-    Strobe(strip, col, 1, letterDelay/4, letterDelay/2, 0);  // 1 dot
+  {                                                             //  ..-.
+    Strobe(strip, col, 2, letterDelay / 4, letterDelay / 2, 0); // 2 dot
+    Strobe(strip, col, 1, letterDelay / 2, letterDelay / 2, 0); // 1 dash
+    Strobe(strip, col, 1, letterDelay / 4, letterDelay / 2, 0); // 1 dot
     break;
   }
   case 'g':
-  {                                                    //  --.
-    Strobe(strip, col, 2, letterDelay/2, letterDelay/2, 0); // 2 dash
-    Strobe(strip, col, 1, letterDelay/4, letterDelay/2, 0);  // 1 dot
+  {                                                             //  --.
+    Strobe(strip, col, 2, letterDelay / 2, letterDelay / 2, 0); // 2 dash
+    Strobe(strip, col, 1, letterDelay / 4, letterDelay / 2, 0); // 1 dot
     break;
   }
   case 'h':
-  {                                                   //  ....
-    Strobe(strip, col, 4, letterDelay/4, letterDelay/2, 0); // 4 dot
+  {                                                             //  ....
+    Strobe(strip, col, 4, letterDelay / 4, letterDelay / 2, 0); // 4 dot
     break;
   }
   case 'i':
-  {                                                   //  ..
-    Strobe(strip, col, 2, letterDelay/4, letterDelay/2, 0); // 2 dot
+  {                                                             //  ..
+    Strobe(strip, col, 2, letterDelay / 4, letterDelay / 2, 0); // 2 dot
     break;
   }
   case 'j':
-  {                                                   //  .---
-    Strobe(strip, col, 2, letterDelay/4, letterDelay/2, 0); // 2 dot
+  {                                                             //  .---
+    Strobe(strip, col, 2, letterDelay / 4, letterDelay / 2, 0); // 2 dot
     break;
   }
   case 'k':
-  {                                                    //  -.-
-    Strobe(strip, col, 1, letterDelay/2, letterDelay/2, 0); // 1 dash
-    Strobe(strip, col, 1, letterDelay/4, letterDelay/2, 0);  // 1 dots
-    Strobe(strip, col, 1, letterDelay/2, letterDelay/2, 0); // 1 dash
+  {                                                             //  -.-
+    Strobe(strip, col, 1, letterDelay / 2, letterDelay / 2, 0); // 1 dash
+    Strobe(strip, col, 1, letterDelay / 4, letterDelay / 2, 0); // 1 dots
+    Strobe(strip, col, 1, letterDelay / 2, letterDelay / 2, 0); // 1 dash
     break;
   }
   case 'l':
-  {                                                    //  .-..
-    Strobe(strip, col, 1, letterDelay/4, letterDelay/2, 0);  // 1 dots
-    Strobe(strip, col, 1, letterDelay/2, letterDelay/2, 0); // 1 dash
-    Strobe(strip, col, 2, letterDelay/4, letterDelay/2, 0); // 2 dot
+  {                                                             //  .-..
+    Strobe(strip, col, 1, letterDelay / 4, letterDelay / 2, 0); // 1 dots
+    Strobe(strip, col, 1, letterDelay / 2, letterDelay / 2, 0); // 1 dash
+    Strobe(strip, col, 2, letterDelay / 4, letterDelay / 2, 0); // 2 dot
     break;
   }
   case 'm':
-  {                                                    //  --
-    Strobe(strip, col, 2, letterDelay/2, letterDelay/2, 0); // 2 dash
+  {                                                             //  --
+    Strobe(strip, col, 2, letterDelay / 2, letterDelay / 2, 0); // 2 dash
     break;
   }
   case 'n':
-  {                                                    //  -.
-    Strobe(strip, col, 1, letterDelay/2, letterDelay/2, 0); // 1 dash
-    Strobe(strip, col, 1, letterDelay/4, letterDelay/2, 0);  // 1 dot
+  {                                                             //  -.
+    Strobe(strip, col, 1, letterDelay / 2, letterDelay / 2, 0); // 1 dash
+    Strobe(strip, col, 1, letterDelay / 4, letterDelay / 2, 0); // 1 dot
     break;
   }
   case 'o':
-  {                                                    //  ---
-    Strobe(strip, col, 3, letterDelay/2, letterDelay/2, 0); // 3 dash
+  {                                                             //  ---
+    Strobe(strip, col, 3, letterDelay / 2, letterDelay / 2, 0); // 3 dash
     break;
   }
   case 'p':
-  {                                                    //  .--.
-    Strobe(strip, col, 1, letterDelay/4, letterDelay/2, 0);  // 1 dots
-    Strobe(strip, col, 2, letterDelay/2, letterDelay/2, 0); // 2 dash
-    Strobe(strip, col, 1, letterDelay/4, letterDelay/2, 0);  // 1 dots
+  {                                                             //  .--.
+    Strobe(strip, col, 1, letterDelay / 4, letterDelay / 2, 0); // 1 dots
+    Strobe(strip, col, 2, letterDelay / 2, letterDelay / 2, 0); // 2 dash
+    Strobe(strip, col, 1, letterDelay / 4, letterDelay / 2, 0); // 1 dots
     break;
   }
   case 'q':
-  {                                                    //  --.-
-    Strobe(strip, col, 2, letterDelay/2, letterDelay/2, 0); // 2 dash
-    Strobe(strip, col, 1, letterDelay/4, letterDelay/2, 0);  // 1 dots
-    Strobe(strip, col, 1, letterDelay/2, letterDelay/2, 0); // 1 dash
+  {                                                             //  --.-
+    Strobe(strip, col, 2, letterDelay / 2, letterDelay / 2, 0); // 2 dash
+    Strobe(strip, col, 1, letterDelay / 4, letterDelay / 2, 0); // 1 dots
+    Strobe(strip, col, 1, letterDelay / 2, letterDelay / 2, 0); // 1 dash
     break;
   }
   case 'r':
-  {                                                    //  .-.
-    Strobe(strip, col, 1, letterDelay/4, letterDelay/2, 0);  // 1 dots
-    Strobe(strip, col, 1, letterDelay/2, letterDelay/2, 0); // 1 dash
-    Strobe(strip, col, 1, letterDelay/4, letterDelay/2, 0);  // 1 dots
+  {                                                             //  .-.
+    Strobe(strip, col, 1, letterDelay / 4, letterDelay / 2, 0); // 1 dots
+    Strobe(strip, col, 1, letterDelay / 2, letterDelay / 2, 0); // 1 dash
+    Strobe(strip, col, 1, letterDelay / 4, letterDelay / 2, 0); // 1 dots
     break;
   }
   case 's':
-  {                                                   //  ...
-    Strobe(strip, col, 3, letterDelay/4, letterDelay/2, 0); // 3 dots
+  {                                                             //  ...
+    Strobe(strip, col, 3, letterDelay / 4, letterDelay / 2, 0); // 3 dots
     break;
   }
   case 't':
-  {                                                    //  -
-    Strobe(strip, col, 1, letterDelay/2, letterDelay/2, 0); // 1 dash
+  {                                                             //  -
+    Strobe(strip, col, 1, letterDelay / 2, letterDelay / 2, 0); // 1 dash
     break;
   }
   case 'u':
-  {                                                    //  ..-
-    Strobe(strip, col, 2, letterDelay/4, letterDelay/2, 0);  // 2 dots
-    Strobe(strip, col, 1, letterDelay/2, letterDelay/2, 0); // 1 dash
+  {                                                             //  ..-
+    Strobe(strip, col, 2, letterDelay / 4, letterDelay / 2, 0); // 2 dots
+    Strobe(strip, col, 1, letterDelay / 2, letterDelay / 2, 0); // 1 dash
     break;
   }
   case 'v':
-  {                                                    //  ...-
-    Strobe(strip, col, 3, letterDelay/4, letterDelay/2, 0);  // 3 dots
-    Strobe(strip, col, 1, letterDelay/2, letterDelay/2, 0); // 1 dash
+  {                                                             //  ...-
+    Strobe(strip, col, 3, letterDelay / 4, letterDelay / 2, 0); // 3 dots
+    Strobe(strip, col, 1, letterDelay / 2, letterDelay / 2, 0); // 1 dash
     break;
   }
   case 'w':
-  {                                                    //  .--
-    Strobe(strip, col, 1, letterDelay/4, letterDelay/2, 0);  // 1 dots
-    Strobe(strip, col, 2, letterDelay/2, letterDelay/2, 0); // 2 dash
+  {                                                             //  .--
+    Strobe(strip, col, 1, letterDelay / 4, letterDelay / 2, 0); // 1 dots
+    Strobe(strip, col, 2, letterDelay / 2, letterDelay / 2, 0); // 2 dash
     break;
   }
   case 'x':
-  {                                                    //  -..-
-    Strobe(strip, col, 1, letterDelay/2, letterDelay/2, 0); // 1 dash
-    Strobe(strip, col, 2, letterDelay/4, letterDelay/2, 0);  // 2 dots
-    Strobe(strip, col, 1, letterDelay/2, letterDelay/2, 0); // 1 dash
+  {                                                             //  -..-
+    Strobe(strip, col, 1, letterDelay / 2, letterDelay / 2, 0); // 1 dash
+    Strobe(strip, col, 2, letterDelay / 4, letterDelay / 2, 0); // 2 dots
+    Strobe(strip, col, 1, letterDelay / 2, letterDelay / 2, 0); // 1 dash
     break;
   }
   case 'y':
-  {                                                    //  -.--
-    Strobe(strip, col, 1, letterDelay/2, letterDelay/2, 0); // 1 dash
-    Strobe(strip, col, 1, letterDelay/4, letterDelay/2, 0);  // 1 dots
-    Strobe(strip, col, 2, letterDelay/2, letterDelay/2, 0); // 2 dash
+  {                                                             //  -.--
+    Strobe(strip, col, 1, letterDelay / 2, letterDelay / 2, 0); // 1 dash
+    Strobe(strip, col, 1, letterDelay / 4, letterDelay / 2, 0); // 1 dots
+    Strobe(strip, col, 2, letterDelay / 2, letterDelay / 2, 0); // 2 dash
     break;
   }
   case 'z':
-  {                                                    //  --..
-    Strobe(strip, col, 2, letterDelay/2, letterDelay/2, 0); // 2 dash
-    Strobe(strip, col, 2, letterDelay/4, letterDelay/2, 0);  // 2 dots
+  {                                                             //  --..
+    Strobe(strip, col, 2, letterDelay / 2, letterDelay / 2, 0); // 2 dash
+    Strobe(strip, col, 2, letterDelay / 4, letterDelay / 2, 0); // 2 dots
     break;
   }
   case '1':
-  {                                                    //  .----
-    Strobe(strip, col, 1, letterDelay/4, letterDelay/2, 0);  // 1 dots
-    Strobe(strip, col, 4, letterDelay/2, letterDelay/2, 0); // 4 dash
+  {                                                             //  .----
+    Strobe(strip, col, 1, letterDelay / 4, letterDelay / 2, 0); // 1 dots
+    Strobe(strip, col, 4, letterDelay / 2, letterDelay / 2, 0); // 4 dash
     break;
   }
   case '2':
-  {                                                    //  ..---
-    Strobe(strip, col, 2, letterDelay/4, letterDelay/2, 0);  // 2 dots
-    Strobe(strip, col, 3, letterDelay/2, letterDelay/2, 0); // 3 dash
+  {                                                             //  ..---
+    Strobe(strip, col, 2, letterDelay / 4, letterDelay / 2, 0); // 2 dots
+    Strobe(strip, col, 3, letterDelay / 2, letterDelay / 2, 0); // 3 dash
     break;
   }
   case '3':
-  {                                                    //  ...--
-    Strobe(strip, col, 3, letterDelay/4, letterDelay/2, 0);  // 3 dots
-    Strobe(strip, col, 2, letterDelay/2, letterDelay/2, 0); // 2 dash
+  {                                                             //  ...--
+    Strobe(strip, col, 3, letterDelay / 4, letterDelay / 2, 0); // 3 dots
+    Strobe(strip, col, 2, letterDelay / 2, letterDelay / 2, 0); // 2 dash
     break;
   }
   case '4':
-  {                                                    //  ....-
-    Strobe(strip, col, 4, letterDelay/4, letterDelay/2, 0);  // 4 dots
-    Strobe(strip, col, 1, letterDelay/2, letterDelay/2, 0); // 1 dash
+  {                                                             //  ....-
+    Strobe(strip, col, 4, letterDelay / 4, letterDelay / 2, 0); // 4 dots
+    Strobe(strip, col, 1, letterDelay / 2, letterDelay / 2, 0); // 1 dash
     break;
   }
   case '5':
-  {                                                   //  .....
-    Strobe(strip, col, 5, letterDelay/4, letterDelay/2, 0); // 5 dots
+  {                                                             //  .....
+    Strobe(strip, col, 5, letterDelay / 4, letterDelay / 2, 0); // 5 dots
     break;
   }
   case '6':
-  {                                                    //  -....
-    Strobe(strip, col, 1, letterDelay/4, letterDelay/2, 0);  // 1 dash
-    Strobe(strip, col, 4, letterDelay/2, letterDelay/2, 0); // 4 dots
+  {                                                             //  -....
+    Strobe(strip, col, 1, letterDelay / 4, letterDelay / 2, 0); // 1 dash
+    Strobe(strip, col, 4, letterDelay / 2, letterDelay / 2, 0); // 4 dots
     break;
   }
   case '7':
-  {                                                    //  --...
-    Strobe(strip, col, 2, letterDelay/4, letterDelay/2, 0);  // 2 dash
-    Strobe(strip, col, 3, letterDelay/2, letterDelay/2, 0); // 3 dots
+  {                                                             //  --...
+    Strobe(strip, col, 2, letterDelay / 4, letterDelay / 2, 0); // 2 dash
+    Strobe(strip, col, 3, letterDelay / 2, letterDelay / 2, 0); // 3 dots
     break;
   }
   case '8':
-  {                                                    //  ---..
-    Strobe(strip, col, 3, letterDelay/4, letterDelay/2, 0);  // 3 dash
-    Strobe(strip, col, 2, letterDelay/2, letterDelay/2, 0); // 2 dots
+  {                                                             //  ---..
+    Strobe(strip, col, 3, letterDelay / 4, letterDelay / 2, 0); // 3 dash
+    Strobe(strip, col, 2, letterDelay / 2, letterDelay / 2, 0); // 2 dots
     break;
   }
   case '9':
-  {                                                    //  ----.
-    Strobe(strip, col, 4, letterDelay/4, letterDelay/2, 0);  // 4 dash
-    Strobe(strip, col, 1, letterDelay/2, letterDelay/2, 0); // 1 dots
+  {                                                             //  ----.
+    Strobe(strip, col, 4, letterDelay / 4, letterDelay / 2, 0); // 4 dash
+    Strobe(strip, col, 1, letterDelay / 2, letterDelay / 2, 0); // 1 dots
     break;
   }
   case '0':
-  {                                                   //  -----
-    Strobe(strip, col, 5, letterDelay/4, letterDelay/2, 0); // 5 dash
+  {                                                             //  -----
+    Strobe(strip, col, 5, letterDelay / 4, letterDelay / 2, 0); // 5 dash
     break;
   }
   case ' ':
   { //
-    delay(letterDelay*2);
+    delay(letterDelay * 2);
     break;
   }
   }
