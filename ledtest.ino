@@ -1,5 +1,6 @@
 #include <Adafruit_DotStar.h>
 #include <bluefruit.h>
+#include <Adafruit_ISM330DHCX.h>
 
 // Because conditional #includes don't work w/Arduino sketches...
 #include <SPI.h>
@@ -13,18 +14,15 @@ Adafruit_DotStar strip1(NUMPIXELS, DATAPIN, CLOCKPIN, DOTSTAR_BRG);
 
 // Here's how to control the LEDs from any two pins:
 #define DATAPIN2 10  // green
-#define CLOCKPIN2 11
-// yellow
+#define CLOCKPIN2 12 // yellow
 Adafruit_DotStar strip2(NUMPIXELS, DATAPIN2, CLOCKPIN2, DOTSTAR_BRG);
-// The last parameter is optional -- this is the color data order of the
-// DotStar strip, which has changed over time in different production runs.
-// Your code just uses R,G,B colors, the library then reassigns as needed.
-// Default is DOTSTAR_BRG, so change this if you have an earlier strip.
 
 // BLE Service
 BLEDfu bledfu;
 BLEDis bledis;
 BLEUart bleuart;
+
+Adafruit_ISM330DHCX ism330dhcx;
 
 void setup()
 {
@@ -67,20 +65,27 @@ void setup()
 
   strip1.setBrightness(25);
   strip2.setBrightness(25);
+
+  if (!ism330dhcx.begin_I2C()) {
+    Serial.println("Failed to find ISM330DHCX chip");
+  } else {
+    Serial.println("ISM330DHCX Found!");
+    beginIMUunit(&ism330dhcx, LSM6DS_ACCEL_RANGE_2_G, LSM6DS_GYRO_RANGE_250_DPS, LSM6DS_RATE_12_5_HZ, LSM6DS_RATE_12_5_HZ);
+  }
 }
 
 int head = 0, tail = -10;  // Index of first 'on' and 'off' pixels
 uint32_t color = 0xFF0000; // 'On' color (starts red)
 uint32_t colors[] = {0x8a1a1a, 0x32a838, 0x0011d1, 0xfbff00, 0xff00fb, 0x00f7ff};
 
-#define numModes 12 // how many modes there are
+#define numModes 15 // how many modes there are
 
 bool editMode = 0;
 
 bool on1 = true;
 bool on2 = true;
 int mode1 = 7;
-int mode2 = 0;
+int mode2 = 2;
 
 int prevCom;
 bool buttonUp = true;
@@ -100,7 +105,7 @@ void loop()
       {
         mode2 = changeLedMode(mode2, command, &on2);
       }
-      // Serial.print((char)command);
+      Serial.print((char)command);
     }
   }
 
@@ -186,6 +191,21 @@ void setLEDMode(int mode, Adafruit_DotStar *strip)
     morseMessage(strip, "lol", 1000, 0xff00f0);
     break;
   }
+  case 13:
+  { // Get Version
+    accelLed(strip);
+    break;
+  }
+  case 14:
+  { // Get Version
+    gyroLed(strip);
+    break;
+  }
+  case 15:
+  { // Get Version
+    tempLed(strip);
+    break;
+  }
   }
 }
 
@@ -254,7 +274,7 @@ int changeLedMode(int mode, int command, bool *isOn)
     {
       if (buttonUp)
       {
-        //editMode = !editMode;
+        editMode = !editMode;
         buttonUp = false;
       }
       else
@@ -671,6 +691,108 @@ void multiColorStrobe(Adafruit_DotStar *strip, uint32_t col[], int arrSize, int 
     delay(EndPause);
   }
 }
+
+void morseMessage(Adafruit_DotStar *strip, String message, int timeDelay, uint32_t col)
+{
+  int num = message.length();
+  char *char_array = new char[num + 1];
+  strcpy(char_array, message.c_str());
+
+  for (int i = 0; i < num; i++)
+  {
+    if (bleuart.read() == 'B')
+    {
+      prevCom = 'B';
+      break;
+    }
+
+    morseLetter(strip, char_array[i], col, timeDelay);
+  }
+
+  delay(timeDelay * 3);
+}
+
+void accelLed(Adafruit_DotStar *strip){
+  sensors_event_t accel;
+  sensors_event_t gyro;
+  sensors_event_t temp;
+  ism330dhcx.getEvent(&accel, &gyro, &temp);
+
+  int colB = (accel.acceleration.x * 10);
+  int colR = (accel.acceleration.y * 10);
+  int colG = (accel.acceleration.z * 10);
+
+  setAll(strip, (byte)colB, (byte)colR, (byte)colB);
+}
+
+void gyroLed(Adafruit_DotStar *strip){
+  sensors_event_t accel;
+  sensors_event_t gyro;
+  sensors_event_t temp;
+  ism330dhcx.getEvent(&accel, &gyro, &temp);
+
+  int colB = (gyro.gyro.x * 10);
+  int colR = (gyro.gyro.y * 10);
+  int colG = (gyro.gyro.z * 10);
+
+  setAll(strip, (byte)colB, (byte)colR, (byte)colB);
+}
+
+void tempLed(Adafruit_DotStar *strip){
+  sensors_event_t accel;
+  sensors_event_t gyro;
+  sensors_event_t temp;
+  ism330dhcx.getEvent(&accel, &gyro, &temp);
+
+  int colB = 255;
+  int colR = 255;
+  int colG = 255;
+
+    if (temp.temperature < -10)
+    {
+      colB = 255;
+      colR = 255;
+      colG = 255;
+    } else if (temp.temperature < 5)
+    {
+      colB = 255;
+      colR = 255 - ((temp.temperature + 10) * 15);
+      colG = 255 - ((temp.temperature + 10) * 15);
+    }
+    else if (temp.temperature < 20)
+    {
+      colB = 255 - ((temp.temperature - 5) * 15);
+      colR = 0;
+      colG = ((temp.temperature - 5) * 15);
+    }
+    else if (temp.temperature < 35)
+    {
+      colB = 0;
+      colR = ((temp.temperature - 20) * 15);
+      colG = 255 - ((temp.temperature - 20) * 15);
+    }
+    else if (temp.temperature < 50)
+    {
+      colB = ((temp.temperature - 35) * 15);
+      colR = 255;
+      colG = ((temp.temperature - 35) * 15);
+    } else {
+      colB = 0;
+      colR = 0;
+      colG = 0;
+    }
+  
+  Serial.print("\n\tTemperature: ");
+  Serial.print(temp.temperature);
+  Serial.println(" deg C");
+
+  Serial.println("Colors are:");
+  Serial.printf("R: %d \t G: %d \t B: %d", colR, colG, colB);
+
+  setAll(strip, (byte)colB, (byte)colR, (byte)colB);
+
+  //delay(200);
+}
 // mode helper methods
 void fadeToBlack(Adafruit_DotStar *strip, int ledNo, byte fadeValue)
 {
@@ -740,26 +862,6 @@ byte *Wheel(byte WheelPos)
   }
 
   return c;
-}
-
-void morseMessage(Adafruit_DotStar *strip, String message, int timeDelay, uint32_t col)
-{
-  int num = message.length();
-  char *char_array = new char[num + 1];
-  strcpy(char_array, message.c_str());
-
-  for (int i = 0; i < num; i++)
-  {
-    if (bleuart.read() == 'B')
-    {
-      prevCom = 'B';
-      break;
-    }
-
-    morseLetter(strip, char_array[i], col, timeDelay);
-  }
-
-  delay(timeDelay * 3);
 }
 
 void morseLetter(Adafruit_DotStar *strip, char letter, uint32_t col, int letterDelay)
@@ -1032,6 +1134,127 @@ void startAdv(void)
   Bluefruit.Advertising.setInterval(32, 244); // in unit of 0.625 ms
   Bluefruit.Advertising.setFastTimeout(30);   // number of seconds in fast mode
   Bluefruit.Advertising.start(0);             // 0 = Don't stop advertising after n seconds
+}
+
+void beginIMUunit(Adafruit_ISM330DHCX *IMUunit, accel_range accR, gyro_range gyroR, data_rate accRate, data_rate grypRate){
+  IMUunit->setAccelRange(accR);
+  Serial.print("Accelerometer range set to: ");
+  switch (IMUunit->getAccelRange()) {
+  case LSM6DS_ACCEL_RANGE_2_G:
+    Serial.println("+-2G");
+    break;
+  case LSM6DS_ACCEL_RANGE_4_G:
+    Serial.println("+-4G");
+    break;
+  case LSM6DS_ACCEL_RANGE_8_G:
+    Serial.println("+-8G");
+    break;
+  case LSM6DS_ACCEL_RANGE_16_G:
+    Serial.println("+-16G");
+    break;
+  }
+
+  IMUunit->setGyroRange(gyroR);
+  Serial.print("Gyro range set to: ");
+  switch (IMUunit->getGyroRange()) {
+  case LSM6DS_GYRO_RANGE_125_DPS:
+    Serial.println("125 degrees/s");
+    break;
+  case LSM6DS_GYRO_RANGE_250_DPS:
+    Serial.println("250 degrees/s");
+    break;
+  case LSM6DS_GYRO_RANGE_500_DPS:
+    Serial.println("500 degrees/s");
+    break;
+  case LSM6DS_GYRO_RANGE_1000_DPS:
+    Serial.println("1000 degrees/s");
+    break;
+  case LSM6DS_GYRO_RANGE_2000_DPS:
+    Serial.println("2000 degrees/s");
+    break;
+  case ISM330DHCX_GYRO_RANGE_4000_DPS:
+    Serial.println("4000 degrees/s");
+    break;
+  }
+
+  IMUunit->setAccelDataRate(accRate);
+  Serial.print("Accelerometer data rate set to: ");
+  switch (IMUunit->getAccelDataRate()) {
+  case LSM6DS_RATE_SHUTDOWN:
+    Serial.println("0 Hz");
+    break;
+  case LSM6DS_RATE_12_5_HZ:
+    Serial.println("12.5 Hz");
+    break;
+  case LSM6DS_RATE_26_HZ:
+    Serial.println("26 Hz");
+    break;
+  case LSM6DS_RATE_52_HZ:
+    Serial.println("52 Hz");
+    break;
+  case LSM6DS_RATE_104_HZ:
+    Serial.println("104 Hz");
+    break;
+  case LSM6DS_RATE_208_HZ:
+    Serial.println("208 Hz");
+    break;
+  case LSM6DS_RATE_416_HZ:
+    Serial.println("416 Hz");
+    break;
+  case LSM6DS_RATE_833_HZ:
+    Serial.println("833 Hz");
+    break;
+  case LSM6DS_RATE_1_66K_HZ:
+    Serial.println("1.66 KHz");
+    break;
+  case LSM6DS_RATE_3_33K_HZ:
+    Serial.println("3.33 KHz");
+    break;
+  case LSM6DS_RATE_6_66K_HZ:
+    Serial.println("6.66 KHz");
+    break;
+  }
+
+  IMUunit->setGyroDataRate(grypRate);
+  Serial.print("Gyro data rate set to: ");
+  switch (IMUunit->getGyroDataRate()) {
+  case LSM6DS_RATE_SHUTDOWN:
+    Serial.println("0 Hz");
+    break;
+  case LSM6DS_RATE_12_5_HZ:
+    Serial.println("12.5 Hz");
+    break;
+  case LSM6DS_RATE_26_HZ:
+    Serial.println("26 Hz");
+    break;
+  case LSM6DS_RATE_52_HZ:
+    Serial.println("52 Hz");
+    break;
+  case LSM6DS_RATE_104_HZ:
+    Serial.println("104 Hz");
+    break;
+  case LSM6DS_RATE_208_HZ:
+    Serial.println("208 Hz");
+    break;
+  case LSM6DS_RATE_416_HZ:
+    Serial.println("416 Hz");
+    break;
+  case LSM6DS_RATE_833_HZ:
+    Serial.println("833 Hz");
+    break;
+  case LSM6DS_RATE_1_66K_HZ:
+    Serial.println("1.66 KHz");
+    break;
+  case LSM6DS_RATE_3_33K_HZ:
+    Serial.println("3.33 KHz");
+    break;
+  case LSM6DS_RATE_6_66K_HZ:
+    Serial.println("6.66 KHz");
+    break;
+  }
+
+  IMUunit->configInt1(false, false, true); // accelerometer DRDY on INT1
+  IMUunit->configInt2(false, true, false); // gyro DRDY on INT2
 }
 
 // strip help methods
