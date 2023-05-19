@@ -70,7 +70,7 @@ void setup()
     Serial.println("Failed to find ISM330DHCX chip");
   } else {
     Serial.println("ISM330DHCX Found!");
-    beginIMUunit(&ism330dhcx, LSM6DS_ACCEL_RANGE_2_G, LSM6DS_GYRO_RANGE_250_DPS, LSM6DS_RATE_12_5_HZ, LSM6DS_RATE_12_5_HZ);
+    beginIMUunit(&ism330dhcx, LSM6DS_ACCEL_RANGE_4_G, LSM6DS_GYRO_RANGE_2000_DPS, LSM6DS_RATE_104_HZ, LSM6DS_RATE_104_HZ);
   }
 }
 
@@ -85,7 +85,7 @@ bool editMode = 0;
 bool on1 = true;
 bool on2 = true;
 int mode1 = 7;
-int mode2 = 2;
+int mode2 = 14;
 
 int prevCom;
 bool buttonUp = true;
@@ -124,88 +124,88 @@ void setLEDMode(int mode, Adafruit_DotStar *strip)
 {
   switch (mode)
   {
-  case 0:
-  { // Get Version
-    stripMode(strip);
-    break;
-  }
-  case 1:
-  { // Get Version
-    raveMode(strip);
-    break;
-  }
-  case 2:
-  { // Get Version
-    randomChaos(strip);
-    break;
-  }
-  case 3:
-  { // Get Version
-    meteorRainGradient(strip, colors[random(0, 6)], 10, 32, true, random(5, 60), random(10, 70));
-    break;
-  }
-  case 4:
-  { // Get Version
-    meteorRain(strip, 0x6c, 0x38, 0xc7, 10, 64, true, 30);
-    break;
-  }
-  case 5:
-  { // Get Version
-    BouncingBalls(strip, 0xff, 0, 0, 3);
-    break;
-  }
-  case 6:
-  { // Get Version
-    byte bColors[3][3] = {{0xff, 0, 0}, {0xff, 0xff, 0xff}, {0, 0, 0xff}};
-    BouncingColoredBalls(strip, 3, bColors);
-    break;
-  }
-  case 7:
-  { // Get Version
-    Fire(strip, 55, 120, 15);
-    break;
-  }
-  case 8:
-  { // Get Version
-    theaterChaseRainbow(strip, 50);
-    break;
-  }
-  case 9:
-  { // Get Version
-    gamerRGB(strip, 30);
-    break;
-  }
-  case 10:
-  { // Get Version
-    Strobe(strip, 0x00, 0xff, 0x00, 10, 50, 50, 1500);
-    break;
-  }
-  case 11:
-  { // Get Version
-    uint32_t tColors[] = {0x00ff00, 0x0000ff};
-    multiColorStrobe(strip, tColors, sizeof(tColors) / sizeof(tColors[0]), 3, 10, 50, 250);
-    break;
-  }
-  case 12:
-  { // Get Version
-    morseMessage(strip, "lol", 1000, 0xff00f0);
-    break;
-  }
-  case 13:
-  { // Get Version
-    accelLed(strip);
-    break;
-  }
-  case 14:
-  { // Get Version
-    gyroLed(strip);
-    break;
-  }
-  case 15:
-  { // Get Version
-    tempLed(strip);
-    break;
-  }
+    case 0:
+      { // Get Version
+        stripMode(strip);
+        break;
+      }
+    case 1:
+      { // Get Version
+        raveMode(strip);
+        break;
+      }
+    case 2:
+      { // Get Version
+        randomChaos(strip);
+        break;
+      }
+    case 3:
+      { // Get Version
+        meteorRainGradient(strip, colors[random(0, 6)], 10, 32, true, random(5, 60), random(10, 70));
+        break;
+      }
+    case 4:
+      { // Get Version
+        meteorRain(strip, 0x6c, 0x38, 0xc7, 10, 64, true, 30);
+        break;
+      }
+    case 5:
+      { // Get Version
+        BouncingBalls(strip, 0xff, 0, 0, 3);
+        break;
+      }
+    case 6:
+      { // Get Version
+        byte bColors[3][3] = {{0xff, 0, 0}, {0xff, 0xff, 0xff}, {0, 0, 0xff}};
+        BouncingColoredBalls(strip, 3, bColors);
+        break;
+      }
+    case 7:
+      { // Get Version
+        Fire(strip, 55, 120, 15);
+        break;
+      }
+    case 8:
+      { // Get Version
+        theaterChaseRainbow(strip, 50);
+        break;
+      }
+    case 9:
+      { // Get Version
+        gamerRGB(strip, 30);
+        break;
+      }
+    case 10:
+      { // Get Version
+        Strobe(strip, 0x00, 0xff, 0x00, 10, 50, 50, 1500);
+        break;
+      }
+    case 11:
+      { // Get Version
+        uint32_t tColors[] = {0x00ff00, 0x0000ff};
+        multiColorStrobe(strip, tColors, sizeof(tColors) / sizeof(tColors[0]), 3, 10, 50, 250);
+        break;
+      }
+    case 12:
+      { // Get Version
+        morseMessage(strip, "lol", 1000, 0xff00f0);
+        break;
+      }
+    case 13:
+      { // Get Version
+        accelLed(strip);
+        break;
+      }
+    case 14:
+      { // Get Version
+        gyroLed(strip);
+        break;
+      }
+    case 15:
+      { // Get Version
+        tempLed(strip);
+        break;
+      }
   }
 }
 
@@ -297,7 +297,7 @@ void stripMode(Adafruit_DotStar *strip)
   delay(20);                         // Pause 20 milliseconds (~50 FPS)
 
   if (++head >= NUMPIXELS)
-  {                         // Increment head index.  Off end of strip?
+  { // Increment head index.  Off end of strip?
     head = 0;               //  Yes, reset head index to start
     if ((color >>= 8) == 0) //  Next color (R->G->B) ... past blue now?
       color = 0xFF0000;     //   Yes, reset to red
@@ -712,7 +712,7 @@ void morseMessage(Adafruit_DotStar *strip, String message, int timeDelay, uint32
   delay(timeDelay * 3);
 }
 
-void accelLed(Adafruit_DotStar *strip){
+void accelLed(Adafruit_DotStar *strip) {
   sensors_event_t accel;
   sensors_event_t gyro;
   sensors_event_t temp;
@@ -722,10 +722,26 @@ void accelLed(Adafruit_DotStar *strip){
   int colR = (accel.acceleration.y * 10);
   int colG = (accel.acceleration.z * 10);
 
-  setAll(strip, (byte)colB, (byte)colR, (byte)colB);
+  for (int i = 0; i < NUMPIXELS; i++)
+  {
+    setPixel(strip, i, colB, colG, colR);
+  }
+  strip->show();
+
+  /* Display the results (acceleration is measured in m/s^2) */
+  Serial.print("\t\tAccel X: ");
+  Serial.print(accel.acceleration.x);
+  Serial.print(" \tY: ");
+  Serial.print(accel.acceleration.y);
+  Serial.print(" \tZ: ");
+  Serial.print(accel.acceleration.z);
+  Serial.println(" m/s^2 ");
+
+  Serial.println("Colors are:");
+  Serial.printf("R: %d \t G: %d \t B: %d", colR, colG, colB);
 }
 
-void gyroLed(Adafruit_DotStar *strip){
+void gyroLed(Adafruit_DotStar *strip) {
   sensors_event_t accel;
   sensors_event_t gyro;
   sensors_event_t temp;
@@ -735,53 +751,70 @@ void gyroLed(Adafruit_DotStar *strip){
   int colR = (gyro.gyro.y * 10);
   int colG = (gyro.gyro.z * 10);
 
-  setAll(strip, (byte)colB, (byte)colR, (byte)colB);
+  for (int i = 0; i < NUMPIXELS; i++)
+  {
+    setPixel(strip, i, colB, colG, colR);
+  }
+  strip->show();
+
+  /* Display the results (rotation is measured in rad/s) */
+  Serial.print("\t\tGyro X: ");
+  Serial.print(gyro.gyro.x);
+  Serial.print(" \tY: ");
+  Serial.print(gyro.gyro.y);
+  Serial.print(" \tZ: ");
+  Serial.print(gyro.gyro.z);
+  Serial.println(" radians/s ");
+  Serial.println();
+
+  Serial.println("Colors are:");
+  Serial.printf("R: %d \t G: %d \t B: %d", colR, colG, colB);
 }
 
-void tempLed(Adafruit_DotStar *strip){
+void tempLed(Adafruit_DotStar *strip) {
   sensors_event_t accel;
   sensors_event_t gyro;
   sensors_event_t temp;
   ism330dhcx.getEvent(&accel, &gyro, &temp);
 
-  int colB = 255;
-  int colR = 255;
-  int colG = 255;
+  byte colB = 255;
+  byte colR = 255;
+  byte colG = 255;
 
-    if (temp.temperature < -10)
-    {
-      colB = 255;
-      colR = 255;
-      colG = 255;
-    } else if (temp.temperature < 5)
-    {
-      colB = 255;
-      colR = 255 - ((temp.temperature + 10) * 15);
-      colG = 255 - ((temp.temperature + 10) * 15);
-    }
-    else if (temp.temperature < 20)
-    {
-      colB = 255 - ((temp.temperature - 5) * 15);
-      colR = 0;
-      colG = ((temp.temperature - 5) * 15);
-    }
-    else if (temp.temperature < 35)
-    {
-      colB = 0;
-      colR = ((temp.temperature - 20) * 15);
-      colG = 255 - ((temp.temperature - 20) * 15);
-    }
-    else if (temp.temperature < 50)
-    {
-      colB = ((temp.temperature - 35) * 15);
-      colR = 255;
-      colG = ((temp.temperature - 35) * 15);
-    } else {
-      colB = 0;
-      colR = 0;
-      colG = 0;
-    }
-  
+  if (temp.temperature < -10)
+  {
+    colB = 255;
+    colR = 255;
+    colG = 255;
+  } else if (temp.temperature < 5)
+  {
+    colB = 255;
+    colR = 255 - ((temp.temperature + 10) * 15);
+    colG = 255 - ((temp.temperature + 10) * 15);
+  }
+  else if (temp.temperature < 20)
+  {
+    colB = 255 - ((temp.temperature - 5) * 15);
+    colR = 0;
+    colG = ((temp.temperature - 5) * 15);
+  }
+  else if (temp.temperature < 35)
+  {
+    colB = 0;
+    colR = ((temp.temperature - 20) * 15);
+    colG = 255 - ((temp.temperature - 20) * 15);
+  }
+  else if (temp.temperature < 50)
+  {
+    colB = ((temp.temperature - 35) * 15);
+    colR = 255;
+    colG = ((temp.temperature - 35) * 15);
+  } else {
+    colB = 0;
+    colR = 0;
+    colG = 0;
+  }
+
   Serial.print("\n\tTemperature: ");
   Serial.print(temp.temperature);
   Serial.println(" deg C");
@@ -789,10 +822,62 @@ void tempLed(Adafruit_DotStar *strip){
   Serial.println("Colors are:");
   Serial.printf("R: %d \t G: %d \t B: %d", colR, colG, colB);
 
-  setAll(strip, (byte)colB, (byte)colR, (byte)colB);
+  for (int i = 0; i < NUMPIXELS; i++)
+  {
+    setPixel(strip, i, colR, colB, colG);
+  }
+  strip->show();
 
   //delay(200);
 }
+
+void accelSnake(Adafruit_DotStar *strip, int del) {
+  sensors_event_t accel;
+  sensors_event_t gyro;
+  sensors_event_t temp;
+  ism330dhcx.getEvent(&accel, &gyro, &temp);
+
+  int colB = (gyro.gyro.x * 10);
+  int colR = (gyro.gyro.y * 10);
+  int colG = (gyro.gyro.z * 10);
+
+  for (int i = 0; i < NUMPIXELS-1; i++)
+  {
+    setPixel(strip, i, strip->getPixelColor(i+1));
+  }
+  setPixel(strip, NUMPIXELS-1, colB, colR, colG);
+  
+  strip->show();
+
+  delay(del);
+}
+
+void gyroSnake(Adafruit_DotStar *strip, int del) {
+  sensors_event_t accel;
+  sensors_event_t gyro;
+  sensors_event_t temp;
+  ism330dhcx.getEvent(&accel, &gyro, &temp);
+
+  int colB = (gyro.gyro.x * 10);
+  int colR = (gyro.gyro.y * 10);
+  int colG = (gyro.gyro.z * 10);
+
+  for (int i = 0; i < NUMPIXELS-1; i++)
+  {
+    setPixel(strip, i, strip->getPixelColor(i+1));
+  }
+  setPixel(strip, NUMPIXELS-1, colB, colR, colG);
+  
+  strip->show();
+
+  delay(del);
+}
+
+
+
+
+
+
 // mode helper methods
 void fadeToBlack(Adafruit_DotStar *strip, int ledNo, byte fadeValue)
 {
@@ -868,227 +953,227 @@ void morseLetter(Adafruit_DotStar *strip, char letter, uint32_t col, int letterD
 {
   switch (letter)
   {
-  case 'a':
-  {                                                             //  .-
-    Strobe(strip, col, 1, letterDelay / 4, letterDelay / 2, 0); // 1 dot
-    Strobe(strip, col, 1, letterDelay / 2, letterDelay / 2, 0); // 1 dash
-    break;
-  }
-  case 'b':
-  {                                                             ///  -...
-    Strobe(strip, col, 1, letterDelay / 2, letterDelay / 2, 0); // 1 dash
-    Strobe(strip, col, 3, letterDelay / 4, letterDelay / 2, 0); // 3 dot
-    break;
-  }
-  case 'c':
-  {                                                             //  -.-.
-    Strobe(strip, col, 1, letterDelay / 2, letterDelay / 2, 0); // 1 dash
-    Strobe(strip, col, 1, letterDelay / 4, letterDelay / 2, 0); // 1 dot
-    Strobe(strip, col, 1, letterDelay / 2, letterDelay / 2, 0); // 1 dash
-    Strobe(strip, col, 1, letterDelay / 4, letterDelay / 2, 0); // 1 dot
-    break;
-  }
-  case 'd':
-  {                                                             //  -..
-    Strobe(strip, col, 1, letterDelay / 2, letterDelay / 2, 0); // 1 dash
-    Strobe(strip, col, 2, letterDelay / 4, letterDelay / 2, 0); // 2 dot
-    break;
-  }
-  case 'e':
-  {                                                             //  .
-    Strobe(strip, col, 1, letterDelay / 4, letterDelay / 2, 0); // 1 dot
-    break;
-  }
-  case 'f':
-  {                                                             //  ..-.
-    Strobe(strip, col, 2, letterDelay / 4, letterDelay / 2, 0); // 2 dot
-    Strobe(strip, col, 1, letterDelay / 2, letterDelay / 2, 0); // 1 dash
-    Strobe(strip, col, 1, letterDelay / 4, letterDelay / 2, 0); // 1 dot
-    break;
-  }
-  case 'g':
-  {                                                             //  --.
-    Strobe(strip, col, 2, letterDelay / 2, letterDelay / 2, 0); // 2 dash
-    Strobe(strip, col, 1, letterDelay / 4, letterDelay / 2, 0); // 1 dot
-    break;
-  }
-  case 'h':
-  {                                                             //  ....
-    Strobe(strip, col, 4, letterDelay / 4, letterDelay / 2, 0); // 4 dot
-    break;
-  }
-  case 'i':
-  {                                                             //  ..
-    Strobe(strip, col, 2, letterDelay / 4, letterDelay / 2, 0); // 2 dot
-    break;
-  }
-  case 'j':
-  {                                                             //  .---
-    Strobe(strip, col, 2, letterDelay / 4, letterDelay / 2, 0); // 2 dot
-    break;
-  }
-  case 'k':
-  {                                                             //  -.-
-    Strobe(strip, col, 1, letterDelay / 2, letterDelay / 2, 0); // 1 dash
-    Strobe(strip, col, 1, letterDelay / 4, letterDelay / 2, 0); // 1 dots
-    Strobe(strip, col, 1, letterDelay / 2, letterDelay / 2, 0); // 1 dash
-    break;
-  }
-  case 'l':
-  {                                                             //  .-..
-    Strobe(strip, col, 1, letterDelay / 4, letterDelay / 2, 0); // 1 dots
-    Strobe(strip, col, 1, letterDelay / 2, letterDelay / 2, 0); // 1 dash
-    Strobe(strip, col, 2, letterDelay / 4, letterDelay / 2, 0); // 2 dot
-    break;
-  }
-  case 'm':
-  {                                                             //  --
-    Strobe(strip, col, 2, letterDelay / 2, letterDelay / 2, 0); // 2 dash
-    break;
-  }
-  case 'n':
-  {                                                             //  -.
-    Strobe(strip, col, 1, letterDelay / 2, letterDelay / 2, 0); // 1 dash
-    Strobe(strip, col, 1, letterDelay / 4, letterDelay / 2, 0); // 1 dot
-    break;
-  }
-  case 'o':
-  {                                                             //  ---
-    Strobe(strip, col, 3, letterDelay / 2, letterDelay / 2, 0); // 3 dash
-    break;
-  }
-  case 'p':
-  {                                                             //  .--.
-    Strobe(strip, col, 1, letterDelay / 4, letterDelay / 2, 0); // 1 dots
-    Strobe(strip, col, 2, letterDelay / 2, letterDelay / 2, 0); // 2 dash
-    Strobe(strip, col, 1, letterDelay / 4, letterDelay / 2, 0); // 1 dots
-    break;
-  }
-  case 'q':
-  {                                                             //  --.-
-    Strobe(strip, col, 2, letterDelay / 2, letterDelay / 2, 0); // 2 dash
-    Strobe(strip, col, 1, letterDelay / 4, letterDelay / 2, 0); // 1 dots
-    Strobe(strip, col, 1, letterDelay / 2, letterDelay / 2, 0); // 1 dash
-    break;
-  }
-  case 'r':
-  {                                                             //  .-.
-    Strobe(strip, col, 1, letterDelay / 4, letterDelay / 2, 0); // 1 dots
-    Strobe(strip, col, 1, letterDelay / 2, letterDelay / 2, 0); // 1 dash
-    Strobe(strip, col, 1, letterDelay / 4, letterDelay / 2, 0); // 1 dots
-    break;
-  }
-  case 's':
-  {                                                             //  ...
-    Strobe(strip, col, 3, letterDelay / 4, letterDelay / 2, 0); // 3 dots
-    break;
-  }
-  case 't':
-  {                                                             //  -
-    Strobe(strip, col, 1, letterDelay / 2, letterDelay / 2, 0); // 1 dash
-    break;
-  }
-  case 'u':
-  {                                                             //  ..-
-    Strobe(strip, col, 2, letterDelay / 4, letterDelay / 2, 0); // 2 dots
-    Strobe(strip, col, 1, letterDelay / 2, letterDelay / 2, 0); // 1 dash
-    break;
-  }
-  case 'v':
-  {                                                             //  ...-
-    Strobe(strip, col, 3, letterDelay / 4, letterDelay / 2, 0); // 3 dots
-    Strobe(strip, col, 1, letterDelay / 2, letterDelay / 2, 0); // 1 dash
-    break;
-  }
-  case 'w':
-  {                                                             //  .--
-    Strobe(strip, col, 1, letterDelay / 4, letterDelay / 2, 0); // 1 dots
-    Strobe(strip, col, 2, letterDelay / 2, letterDelay / 2, 0); // 2 dash
-    break;
-  }
-  case 'x':
-  {                                                             //  -..-
-    Strobe(strip, col, 1, letterDelay / 2, letterDelay / 2, 0); // 1 dash
-    Strobe(strip, col, 2, letterDelay / 4, letterDelay / 2, 0); // 2 dots
-    Strobe(strip, col, 1, letterDelay / 2, letterDelay / 2, 0); // 1 dash
-    break;
-  }
-  case 'y':
-  {                                                             //  -.--
-    Strobe(strip, col, 1, letterDelay / 2, letterDelay / 2, 0); // 1 dash
-    Strobe(strip, col, 1, letterDelay / 4, letterDelay / 2, 0); // 1 dots
-    Strobe(strip, col, 2, letterDelay / 2, letterDelay / 2, 0); // 2 dash
-    break;
-  }
-  case 'z':
-  {                                                             //  --..
-    Strobe(strip, col, 2, letterDelay / 2, letterDelay / 2, 0); // 2 dash
-    Strobe(strip, col, 2, letterDelay / 4, letterDelay / 2, 0); // 2 dots
-    break;
-  }
-  case '1':
-  {                                                             //  .----
-    Strobe(strip, col, 1, letterDelay / 4, letterDelay / 2, 0); // 1 dots
-    Strobe(strip, col, 4, letterDelay / 2, letterDelay / 2, 0); // 4 dash
-    break;
-  }
-  case '2':
-  {                                                             //  ..---
-    Strobe(strip, col, 2, letterDelay / 4, letterDelay / 2, 0); // 2 dots
-    Strobe(strip, col, 3, letterDelay / 2, letterDelay / 2, 0); // 3 dash
-    break;
-  }
-  case '3':
-  {                                                             //  ...--
-    Strobe(strip, col, 3, letterDelay / 4, letterDelay / 2, 0); // 3 dots
-    Strobe(strip, col, 2, letterDelay / 2, letterDelay / 2, 0); // 2 dash
-    break;
-  }
-  case '4':
-  {                                                             //  ....-
-    Strobe(strip, col, 4, letterDelay / 4, letterDelay / 2, 0); // 4 dots
-    Strobe(strip, col, 1, letterDelay / 2, letterDelay / 2, 0); // 1 dash
-    break;
-  }
-  case '5':
-  {                                                             //  .....
-    Strobe(strip, col, 5, letterDelay / 4, letterDelay / 2, 0); // 5 dots
-    break;
-  }
-  case '6':
-  {                                                             //  -....
-    Strobe(strip, col, 1, letterDelay / 4, letterDelay / 2, 0); // 1 dash
-    Strobe(strip, col, 4, letterDelay / 2, letterDelay / 2, 0); // 4 dots
-    break;
-  }
-  case '7':
-  {                                                             //  --...
-    Strobe(strip, col, 2, letterDelay / 4, letterDelay / 2, 0); // 2 dash
-    Strobe(strip, col, 3, letterDelay / 2, letterDelay / 2, 0); // 3 dots
-    break;
-  }
-  case '8':
-  {                                                             //  ---..
-    Strobe(strip, col, 3, letterDelay / 4, letterDelay / 2, 0); // 3 dash
-    Strobe(strip, col, 2, letterDelay / 2, letterDelay / 2, 0); // 2 dots
-    break;
-  }
-  case '9':
-  {                                                             //  ----.
-    Strobe(strip, col, 4, letterDelay / 4, letterDelay / 2, 0); // 4 dash
-    Strobe(strip, col, 1, letterDelay / 2, letterDelay / 2, 0); // 1 dots
-    break;
-  }
-  case '0':
-  {                                                             //  -----
-    Strobe(strip, col, 5, letterDelay / 4, letterDelay / 2, 0); // 5 dash
-    break;
-  }
-  case ' ':
-  { //
-    delay(letterDelay * 2);
-    break;
-  }
+    case 'a':
+      { //  .-
+        Strobe(strip, col, 1, letterDelay / 4, letterDelay / 2, 0); // 1 dot
+        Strobe(strip, col, 1, letterDelay / 2, letterDelay / 2, 0); // 1 dash
+        break;
+      }
+    case 'b':
+      { ///  -...
+        Strobe(strip, col, 1, letterDelay / 2, letterDelay / 2, 0); // 1 dash
+        Strobe(strip, col, 3, letterDelay / 4, letterDelay / 2, 0); // 3 dot
+        break;
+      }
+    case 'c':
+      { //  -.-.
+        Strobe(strip, col, 1, letterDelay / 2, letterDelay / 2, 0); // 1 dash
+        Strobe(strip, col, 1, letterDelay / 4, letterDelay / 2, 0); // 1 dot
+        Strobe(strip, col, 1, letterDelay / 2, letterDelay / 2, 0); // 1 dash
+        Strobe(strip, col, 1, letterDelay / 4, letterDelay / 2, 0); // 1 dot
+        break;
+      }
+    case 'd':
+      { //  -..
+        Strobe(strip, col, 1, letterDelay / 2, letterDelay / 2, 0); // 1 dash
+        Strobe(strip, col, 2, letterDelay / 4, letterDelay / 2, 0); // 2 dot
+        break;
+      }
+    case 'e':
+      { //  .
+        Strobe(strip, col, 1, letterDelay / 4, letterDelay / 2, 0); // 1 dot
+        break;
+      }
+    case 'f':
+      { //  ..-.
+        Strobe(strip, col, 2, letterDelay / 4, letterDelay / 2, 0); // 2 dot
+        Strobe(strip, col, 1, letterDelay / 2, letterDelay / 2, 0); // 1 dash
+        Strobe(strip, col, 1, letterDelay / 4, letterDelay / 2, 0); // 1 dot
+        break;
+      }
+    case 'g':
+      { //  --.
+        Strobe(strip, col, 2, letterDelay / 2, letterDelay / 2, 0); // 2 dash
+        Strobe(strip, col, 1, letterDelay / 4, letterDelay / 2, 0); // 1 dot
+        break;
+      }
+    case 'h':
+      { //  ....
+        Strobe(strip, col, 4, letterDelay / 4, letterDelay / 2, 0); // 4 dot
+        break;
+      }
+    case 'i':
+      { //  ..
+        Strobe(strip, col, 2, letterDelay / 4, letterDelay / 2, 0); // 2 dot
+        break;
+      }
+    case 'j':
+      { //  .---
+        Strobe(strip, col, 2, letterDelay / 4, letterDelay / 2, 0); // 2 dot
+        break;
+      }
+    case 'k':
+      { //  -.-
+        Strobe(strip, col, 1, letterDelay / 2, letterDelay / 2, 0); // 1 dash
+        Strobe(strip, col, 1, letterDelay / 4, letterDelay / 2, 0); // 1 dots
+        Strobe(strip, col, 1, letterDelay / 2, letterDelay / 2, 0); // 1 dash
+        break;
+      }
+    case 'l':
+      { //  .-..
+        Strobe(strip, col, 1, letterDelay / 4, letterDelay / 2, 0); // 1 dots
+        Strobe(strip, col, 1, letterDelay / 2, letterDelay / 2, 0); // 1 dash
+        Strobe(strip, col, 2, letterDelay / 4, letterDelay / 2, 0); // 2 dot
+        break;
+      }
+    case 'm':
+      { //  --
+        Strobe(strip, col, 2, letterDelay / 2, letterDelay / 2, 0); // 2 dash
+        break;
+      }
+    case 'n':
+      { //  -.
+        Strobe(strip, col, 1, letterDelay / 2, letterDelay / 2, 0); // 1 dash
+        Strobe(strip, col, 1, letterDelay / 4, letterDelay / 2, 0); // 1 dot
+        break;
+      }
+    case 'o':
+      { //  ---
+        Strobe(strip, col, 3, letterDelay / 2, letterDelay / 2, 0); // 3 dash
+        break;
+      }
+    case 'p':
+      { //  .--.
+        Strobe(strip, col, 1, letterDelay / 4, letterDelay / 2, 0); // 1 dots
+        Strobe(strip, col, 2, letterDelay / 2, letterDelay / 2, 0); // 2 dash
+        Strobe(strip, col, 1, letterDelay / 4, letterDelay / 2, 0); // 1 dots
+        break;
+      }
+    case 'q':
+      { //  --.-
+        Strobe(strip, col, 2, letterDelay / 2, letterDelay / 2, 0); // 2 dash
+        Strobe(strip, col, 1, letterDelay / 4, letterDelay / 2, 0); // 1 dots
+        Strobe(strip, col, 1, letterDelay / 2, letterDelay / 2, 0); // 1 dash
+        break;
+      }
+    case 'r':
+      { //  .-.
+        Strobe(strip, col, 1, letterDelay / 4, letterDelay / 2, 0); // 1 dots
+        Strobe(strip, col, 1, letterDelay / 2, letterDelay / 2, 0); // 1 dash
+        Strobe(strip, col, 1, letterDelay / 4, letterDelay / 2, 0); // 1 dots
+        break;
+      }
+    case 's':
+      { //  ...
+        Strobe(strip, col, 3, letterDelay / 4, letterDelay / 2, 0); // 3 dots
+        break;
+      }
+    case 't':
+      { //  -
+        Strobe(strip, col, 1, letterDelay / 2, letterDelay / 2, 0); // 1 dash
+        break;
+      }
+    case 'u':
+      { //  ..-
+        Strobe(strip, col, 2, letterDelay / 4, letterDelay / 2, 0); // 2 dots
+        Strobe(strip, col, 1, letterDelay / 2, letterDelay / 2, 0); // 1 dash
+        break;
+      }
+    case 'v':
+      { //  ...-
+        Strobe(strip, col, 3, letterDelay / 4, letterDelay / 2, 0); // 3 dots
+        Strobe(strip, col, 1, letterDelay / 2, letterDelay / 2, 0); // 1 dash
+        break;
+      }
+    case 'w':
+      { //  .--
+        Strobe(strip, col, 1, letterDelay / 4, letterDelay / 2, 0); // 1 dots
+        Strobe(strip, col, 2, letterDelay / 2, letterDelay / 2, 0); // 2 dash
+        break;
+      }
+    case 'x':
+      { //  -..-
+        Strobe(strip, col, 1, letterDelay / 2, letterDelay / 2, 0); // 1 dash
+        Strobe(strip, col, 2, letterDelay / 4, letterDelay / 2, 0); // 2 dots
+        Strobe(strip, col, 1, letterDelay / 2, letterDelay / 2, 0); // 1 dash
+        break;
+      }
+    case 'y':
+      { //  -.--
+        Strobe(strip, col, 1, letterDelay / 2, letterDelay / 2, 0); // 1 dash
+        Strobe(strip, col, 1, letterDelay / 4, letterDelay / 2, 0); // 1 dots
+        Strobe(strip, col, 2, letterDelay / 2, letterDelay / 2, 0); // 2 dash
+        break;
+      }
+    case 'z':
+      { //  --..
+        Strobe(strip, col, 2, letterDelay / 2, letterDelay / 2, 0); // 2 dash
+        Strobe(strip, col, 2, letterDelay / 4, letterDelay / 2, 0); // 2 dots
+        break;
+      }
+    case '1':
+      { //  .----
+        Strobe(strip, col, 1, letterDelay / 4, letterDelay / 2, 0); // 1 dots
+        Strobe(strip, col, 4, letterDelay / 2, letterDelay / 2, 0); // 4 dash
+        break;
+      }
+    case '2':
+      { //  ..---
+        Strobe(strip, col, 2, letterDelay / 4, letterDelay / 2, 0); // 2 dots
+        Strobe(strip, col, 3, letterDelay / 2, letterDelay / 2, 0); // 3 dash
+        break;
+      }
+    case '3':
+      { //  ...--
+        Strobe(strip, col, 3, letterDelay / 4, letterDelay / 2, 0); // 3 dots
+        Strobe(strip, col, 2, letterDelay / 2, letterDelay / 2, 0); // 2 dash
+        break;
+      }
+    case '4':
+      { //  ....-
+        Strobe(strip, col, 4, letterDelay / 4, letterDelay / 2, 0); // 4 dots
+        Strobe(strip, col, 1, letterDelay / 2, letterDelay / 2, 0); // 1 dash
+        break;
+      }
+    case '5':
+      { //  .....
+        Strobe(strip, col, 5, letterDelay / 4, letterDelay / 2, 0); // 5 dots
+        break;
+      }
+    case '6':
+      { //  -....
+        Strobe(strip, col, 1, letterDelay / 4, letterDelay / 2, 0); // 1 dash
+        Strobe(strip, col, 4, letterDelay / 2, letterDelay / 2, 0); // 4 dots
+        break;
+      }
+    case '7':
+      { //  --...
+        Strobe(strip, col, 2, letterDelay / 4, letterDelay / 2, 0); // 2 dash
+        Strobe(strip, col, 3, letterDelay / 2, letterDelay / 2, 0); // 3 dots
+        break;
+      }
+    case '8':
+      { //  ---..
+        Strobe(strip, col, 3, letterDelay / 4, letterDelay / 2, 0); // 3 dash
+        Strobe(strip, col, 2, letterDelay / 2, letterDelay / 2, 0); // 2 dots
+        break;
+      }
+    case '9':
+      { //  ----.
+        Strobe(strip, col, 4, letterDelay / 4, letterDelay / 2, 0); // 4 dash
+        Strobe(strip, col, 1, letterDelay / 2, letterDelay / 2, 0); // 1 dots
+        break;
+      }
+    case '0':
+      { //  -----
+        Strobe(strip, col, 5, letterDelay / 4, letterDelay / 2, 0); // 5 dash
+        break;
+      }
+    case ' ':
+      { //
+        delay(letterDelay * 2);
+        break;
+      }
   }
   delay(letterDelay);
 }
@@ -1122,135 +1207,135 @@ void startAdv(void)
   Bluefruit.ScanResponse.addName();
 
   /* Start Advertising
-   * - Enable auto advertising if disconnected
-   * - Interval:  fast mode = 20 ms, slow mode = 152.5 ms
-   * - Timeout for fast mode is 30 seconds
-   * - Start(timeout) with timeout = 0 will advertise forever (until connected)
-   *
-   * For recommended advertising interval
-   * https://developer.apple.com/library/content/qa/qa1931/_index.html
-   */
+     - Enable auto advertising if disconnected
+     - Interval:  fast mode = 20 ms, slow mode = 152.5 ms
+     - Timeout for fast mode is 30 seconds
+     - Start(timeout) with timeout = 0 will advertise forever (until connected)
+
+     For recommended advertising interval
+     https://developer.apple.com/library/content/qa/qa1931/_index.html
+  */
   Bluefruit.Advertising.restartOnDisconnect(true);
   Bluefruit.Advertising.setInterval(32, 244); // in unit of 0.625 ms
   Bluefruit.Advertising.setFastTimeout(30);   // number of seconds in fast mode
   Bluefruit.Advertising.start(0);             // 0 = Don't stop advertising after n seconds
 }
 
-void beginIMUunit(Adafruit_ISM330DHCX *IMUunit, accel_range accR, gyro_range gyroR, data_rate accRate, data_rate grypRate){
+void beginIMUunit(Adafruit_ISM330DHCX *IMUunit, accel_range accR, gyro_range gyroR, data_rate accRate, data_rate grypRate) {
   IMUunit->setAccelRange(accR);
   Serial.print("Accelerometer range set to: ");
   switch (IMUunit->getAccelRange()) {
-  case LSM6DS_ACCEL_RANGE_2_G:
-    Serial.println("+-2G");
-    break;
-  case LSM6DS_ACCEL_RANGE_4_G:
-    Serial.println("+-4G");
-    break;
-  case LSM6DS_ACCEL_RANGE_8_G:
-    Serial.println("+-8G");
-    break;
-  case LSM6DS_ACCEL_RANGE_16_G:
-    Serial.println("+-16G");
-    break;
+    case LSM6DS_ACCEL_RANGE_2_G:
+      Serial.println("+-2G");
+      break;
+    case LSM6DS_ACCEL_RANGE_4_G:
+      Serial.println("+-4G");
+      break;
+    case LSM6DS_ACCEL_RANGE_8_G:
+      Serial.println("+-8G");
+      break;
+    case LSM6DS_ACCEL_RANGE_16_G:
+      Serial.println("+-16G");
+      break;
   }
 
   IMUunit->setGyroRange(gyroR);
   Serial.print("Gyro range set to: ");
   switch (IMUunit->getGyroRange()) {
-  case LSM6DS_GYRO_RANGE_125_DPS:
-    Serial.println("125 degrees/s");
-    break;
-  case LSM6DS_GYRO_RANGE_250_DPS:
-    Serial.println("250 degrees/s");
-    break;
-  case LSM6DS_GYRO_RANGE_500_DPS:
-    Serial.println("500 degrees/s");
-    break;
-  case LSM6DS_GYRO_RANGE_1000_DPS:
-    Serial.println("1000 degrees/s");
-    break;
-  case LSM6DS_GYRO_RANGE_2000_DPS:
-    Serial.println("2000 degrees/s");
-    break;
-  case ISM330DHCX_GYRO_RANGE_4000_DPS:
-    Serial.println("4000 degrees/s");
-    break;
+    case LSM6DS_GYRO_RANGE_125_DPS:
+      Serial.println("125 degrees/s");
+      break;
+    case LSM6DS_GYRO_RANGE_250_DPS:
+      Serial.println("250 degrees/s");
+      break;
+    case LSM6DS_GYRO_RANGE_500_DPS:
+      Serial.println("500 degrees/s");
+      break;
+    case LSM6DS_GYRO_RANGE_1000_DPS:
+      Serial.println("1000 degrees/s");
+      break;
+    case LSM6DS_GYRO_RANGE_2000_DPS:
+      Serial.println("2000 degrees/s");
+      break;
+    case ISM330DHCX_GYRO_RANGE_4000_DPS:
+      Serial.println("4000 degrees/s");
+      break;
   }
 
   IMUunit->setAccelDataRate(accRate);
   Serial.print("Accelerometer data rate set to: ");
   switch (IMUunit->getAccelDataRate()) {
-  case LSM6DS_RATE_SHUTDOWN:
-    Serial.println("0 Hz");
-    break;
-  case LSM6DS_RATE_12_5_HZ:
-    Serial.println("12.5 Hz");
-    break;
-  case LSM6DS_RATE_26_HZ:
-    Serial.println("26 Hz");
-    break;
-  case LSM6DS_RATE_52_HZ:
-    Serial.println("52 Hz");
-    break;
-  case LSM6DS_RATE_104_HZ:
-    Serial.println("104 Hz");
-    break;
-  case LSM6DS_RATE_208_HZ:
-    Serial.println("208 Hz");
-    break;
-  case LSM6DS_RATE_416_HZ:
-    Serial.println("416 Hz");
-    break;
-  case LSM6DS_RATE_833_HZ:
-    Serial.println("833 Hz");
-    break;
-  case LSM6DS_RATE_1_66K_HZ:
-    Serial.println("1.66 KHz");
-    break;
-  case LSM6DS_RATE_3_33K_HZ:
-    Serial.println("3.33 KHz");
-    break;
-  case LSM6DS_RATE_6_66K_HZ:
-    Serial.println("6.66 KHz");
-    break;
+    case LSM6DS_RATE_SHUTDOWN:
+      Serial.println("0 Hz");
+      break;
+    case LSM6DS_RATE_12_5_HZ:
+      Serial.println("12.5 Hz");
+      break;
+    case LSM6DS_RATE_26_HZ:
+      Serial.println("26 Hz");
+      break;
+    case LSM6DS_RATE_52_HZ:
+      Serial.println("52 Hz");
+      break;
+    case LSM6DS_RATE_104_HZ:
+      Serial.println("104 Hz");
+      break;
+    case LSM6DS_RATE_208_HZ:
+      Serial.println("208 Hz");
+      break;
+    case LSM6DS_RATE_416_HZ:
+      Serial.println("416 Hz");
+      break;
+    case LSM6DS_RATE_833_HZ:
+      Serial.println("833 Hz");
+      break;
+    case LSM6DS_RATE_1_66K_HZ:
+      Serial.println("1.66 KHz");
+      break;
+    case LSM6DS_RATE_3_33K_HZ:
+      Serial.println("3.33 KHz");
+      break;
+    case LSM6DS_RATE_6_66K_HZ:
+      Serial.println("6.66 KHz");
+      break;
   }
 
   IMUunit->setGyroDataRate(grypRate);
   Serial.print("Gyro data rate set to: ");
   switch (IMUunit->getGyroDataRate()) {
-  case LSM6DS_RATE_SHUTDOWN:
-    Serial.println("0 Hz");
-    break;
-  case LSM6DS_RATE_12_5_HZ:
-    Serial.println("12.5 Hz");
-    break;
-  case LSM6DS_RATE_26_HZ:
-    Serial.println("26 Hz");
-    break;
-  case LSM6DS_RATE_52_HZ:
-    Serial.println("52 Hz");
-    break;
-  case LSM6DS_RATE_104_HZ:
-    Serial.println("104 Hz");
-    break;
-  case LSM6DS_RATE_208_HZ:
-    Serial.println("208 Hz");
-    break;
-  case LSM6DS_RATE_416_HZ:
-    Serial.println("416 Hz");
-    break;
-  case LSM6DS_RATE_833_HZ:
-    Serial.println("833 Hz");
-    break;
-  case LSM6DS_RATE_1_66K_HZ:
-    Serial.println("1.66 KHz");
-    break;
-  case LSM6DS_RATE_3_33K_HZ:
-    Serial.println("3.33 KHz");
-    break;
-  case LSM6DS_RATE_6_66K_HZ:
-    Serial.println("6.66 KHz");
-    break;
+    case LSM6DS_RATE_SHUTDOWN:
+      Serial.println("0 Hz");
+      break;
+    case LSM6DS_RATE_12_5_HZ:
+      Serial.println("12.5 Hz");
+      break;
+    case LSM6DS_RATE_26_HZ:
+      Serial.println("26 Hz");
+      break;
+    case LSM6DS_RATE_52_HZ:
+      Serial.println("52 Hz");
+      break;
+    case LSM6DS_RATE_104_HZ:
+      Serial.println("104 Hz");
+      break;
+    case LSM6DS_RATE_208_HZ:
+      Serial.println("208 Hz");
+      break;
+    case LSM6DS_RATE_416_HZ:
+      Serial.println("416 Hz");
+      break;
+    case LSM6DS_RATE_833_HZ:
+      Serial.println("833 Hz");
+      break;
+    case LSM6DS_RATE_1_66K_HZ:
+      Serial.println("1.66 KHz");
+      break;
+    case LSM6DS_RATE_3_33K_HZ:
+      Serial.println("3.33 KHz");
+      break;
+    case LSM6DS_RATE_6_66K_HZ:
+      Serial.println("6.66 KHz");
+      break;
   }
 
   IMUunit->configInt1(false, false, true); // accelerometer DRDY on INT1
@@ -1268,6 +1353,11 @@ void beginStrip(Adafruit_DotStar *strip)
 void setPixel(Adafruit_DotStar *strip, int Pixel, byte red, byte green, byte blue)
 {
   strip->setPixelColor(Pixel, strip->gamma32(strip->Color(red, green, blue)));
+}
+
+void setPixel(Adafruit_DotStar *strip, int Pixel,uint32_t colo)
+{
+  strip->setPixelColor(Pixel, strip->gamma32(colo));
 }
 
 void setAll(Adafruit_DotStar *strip, byte red, byte green, byte blue)
